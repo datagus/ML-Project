@@ -1,6 +1,6 @@
 # Analysis of Exercise Quality
 Gus Mairs  
-9/22/2017  
+9/24/2017  
 
 #### Executive Summary
 This project builds a machine learning prediction model for a barbell lifting task, using a dataset from a 2013 study[1] that captured motion data in several dimensions/calculations for six subjects. The model design combines principal component reduction (PCA) and a support vector machine training method (SVM) to achieve a 95% in-sample accuracy level for prediction of the manner of exercise among five classifications (A through E). Cross-validation testing confirmed the 95% (or greater) accuracy level on three independently sampled validation datasets modeled on the test dataset with an N-size of 20. The model was able to achieve 90% accuracy on the test dataset.

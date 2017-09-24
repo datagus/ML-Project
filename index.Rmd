@@ -1,7 +1,7 @@
 ---
 title: "Analysis of Exercise Quality"
 author: "Gus Mairs"
-date: "9/22/2017"
+date: "9/24/2017"
 output:
   html_document:
     keep_md: yes

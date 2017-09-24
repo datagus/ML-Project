@@ -6,10 +6,11 @@ Gus Mairs
 This project builds a machine learning prediction model for a barbell lifting task, using a dataset from a 2013 study[1] that captured motion data in several dimensions/calculations for six subjects. The model design combines principal component reduction (PCA) and a support vector machine training method (SVM) to achieve a 95% in-sample accuracy level for prediction of the manner of exercise among five classifications (A through E). Cross-validation testing confirmed the 95% (or greater) accuracy level on three independently sampled validation datasets modeled on the test dataset with an N-size of 20. The model was able to achieve 90% accuracy on the test dataset.
 
 This paper describes and demonstrates the analysis work completed in four sections:
-*Data cleaning, component understanding and validation dataset sampling
-*Choices made for component reduction and preprocessing using PCA routines
-*Brief description of machine learning model analysis and the choice to use SVM
-*Validation, conclusion, and testing result
+
+* Data cleaning, component understanding and validation dataset sampling
+* Choices made for component reduction and preprocessing using PCA routines
+* Brief description of machine learning model analysis and the choice to use SVM
+* Validation, conclusion, and testing result
 
 #### Data cleaning, component understanding and validation sampling
 Exploratory analysis of the training and testing datasets quickly revealed the extent of missing or NA values in many of the 152 components columns. After reading the study to understand data collection and calculation techniques, and after examining for potential differences between the training and testing datasets on this point, I determined that removing the components with 97% missing data would improve any model's effectiveness and not cause unintended consequences for the goals of the project.
@@ -61,9 +62,10 @@ trnPC95 <- predict(pc95, trn[ , 8:59])
 
 #### Machine learning model analysis and the choice to use SVM
 I explored model-based (lda), boosting (gbm) and support vector machine (svm) algorithms using the dataset transformed by PCA, with the following outcomes:
-*The simple "lda" model worked swiftly but produced only 40-50% in-sample accuracy
-*Boosting methods through "gbm" were too computationally intensive on such a large dataset
-*Support vector algorithms worked quickly and effectively
+
+* The simple "lda" model worked swiftly but produced only 40-50% in-sample accuracy
+* Boosting methods through "gbm" were too computationally intensive on such a large dataset
+* Support vector algorithms worked quickly and effectively
 
 I anchored on SVM and was able to produce 95% accuracy without any tuning through an algorithm that completed in under 20 seconds. I noted decent accuracy of 87% with the PC80 transformation -- if the computational overhead was significantly better with just 12 components this might be a good tradeoff, but the PC95 transformation with 25 components runs just as quickly as with 12 components. Here I show the confuion matrix and accuracy result.
 

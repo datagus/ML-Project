@@ -126,7 +126,13 @@ $(document).ready(function () {
 <div id="executive-summary" class="section level4">
 <h4>Executive Summary</h4>
 <p>This project builds a machine learning prediction model for a barbell lifting task, using a dataset from a 2013 study[1] that captured motion data in several dimensions/calculations for six subjects. The model design combines principal component reduction (PCA) and a support vector machine training method (SVM) to achieve a 95% in-sample accuracy level for prediction of the manner of exercise among five classifications (A through E). Cross-validation testing confirmed the 95% (or greater) accuracy level on three independently sampled validation datasets modeled on the test dataset with an N-size of 20. The model was able to achieve 90% accuracy on the test dataset.</p>
-<p>This paper describes and demonstrates the analysis work completed in four sections: <em>Data cleaning, component understanding and validation dataset sampling </em>Choices made for component reduction and preprocessing using PCA routines <em>Brief description of machine learning model analysis and the choice to use SVM </em>Validation, conclusion, and testing result</p>
+<p>This paper describes and demonstrates the analysis work completed in four sections:</p>
+<ul>
+<li>Data cleaning, component understanding and validation dataset sampling</li>
+<li>Choices made for component reduction and preprocessing using PCA routines</li>
+<li>Brief description of machine learning model analysis and the choice to use SVM</li>
+<li>Validation, conclusion, and testing result</li>
+</ul>
 </div>
 <div id="data-cleaning-component-understanding-and-validation-sampling" class="section level4">
 <h4>Data cleaning, component understanding and validation sampling</h4>
@@ -162,7 +168,12 @@ for(i in 1:5) {
 </div>
 <div id="machine-learning-model-analysis-and-the-choice-to-use-svm" class="section level4">
 <h4>Machine learning model analysis and the choice to use SVM</h4>
-<p>I explored model-based (lda), boosting (gbm) and support vector machine (svm) algorithms using the dataset transformed by PCA, with the following outcomes: <em>The simple “lda” model worked swiftly but produced only 40-50% in-sample accuracy </em>Boosting methods through “gbm” were too computationally intensive on such a large dataset *Support vector algorithms worked quickly and effectively</p>
+<p>I explored model-based (lda), boosting (gbm) and support vector machine (svm) algorithms using the dataset transformed by PCA, with the following outcomes:</p>
+<ul>
+<li>The simple “lda” model worked swiftly but produced only 40-50% in-sample accuracy</li>
+<li>Boosting methods through “gbm” were too computationally intensive on such a large dataset</li>
+<li>Support vector algorithms worked quickly and effectively</li>
+</ul>
 <p>I anchored on SVM and was able to produce 95% accuracy without any tuning through an algorithm that completed in under 20 seconds. I noted decent accuracy of 87% with the PC80 transformation – if the computational overhead was significantly better with just 12 components this might be a good tradeoff, but the PC95 transformation with 25 components runs just as quickly as with 12 components. Here I show the confuion matrix and accuracy result.</p>
 <pre class="r"><code>library(e1071)
 fitSVM95 &lt;- svm(trnPC95, trn$classe)

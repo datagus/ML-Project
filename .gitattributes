@@ -1,0 +1,3 @@
+dev/* linguist-vendored
+*.Rmd linquist-language=R
+*.html linquist-vendored

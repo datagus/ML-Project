@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="Gus McLeod" />
+<meta name="author" content="Gus Mairs" />
 
 
 <title>Analysis of Exercise Quality</title>
@@ -156,13 +156,13 @@ for(i in 1:5) {
 <p>I started with a hypothesis that a combination of parameter reduction and machine learning algorithm fitting would enable the best efficiency and accuracy in designing a model. I used PCA preprocessing to examine the parameters, choosing thresholds of 80% and 95% of variance explained and getting 12 and 25 components needed, respectively. I ran some initial training efforts with the data transformed by these preprocess models and found decent accuracy and efficiency, so landed on using PCA at the 95% threshold.</p>
 <pre class="r"><code>(pc95 &lt;- preProcess(trn[ , 8:59], method = &quot;pca&quot;, thresh = 0.95))</code></pre>
 <pre><code>## Created from 18642 samples and 52 variables
-## 
+##
 ## Pre-processing:
 ##   - centered (52)
 ##   - ignored (0)
 ##   - principal component signal extraction (52)
 ##   - scaled (52)
-## 
+##
 ## PCA needed 25 components to capture 95 percent of the variance</code></pre>
 <pre class="r"><code>trnPC95 &lt;- predict(pc95, trn[ , 8:59])</code></pre>
 </div>
@@ -187,7 +187,7 @@ conf95$table; conf95$overall[&quot;Accuracy&quot;]</code></pre>
 ##          C    9   96 3121  270   56
 ##          D    0    4   49 2772   72
 ##          E    0    4    5    5 3292</code></pre>
-<pre><code>##  Accuracy 
+<pre><code>##  Accuracy
 ## 0.9524193</code></pre>
 </div>
 <div id="validation-conclusion-and-testing-result" class="section level4">

@@ -1,45 +1,38 @@
-# %%
+# %% Load libraries
+#
 library(caret, quietly = T)
 library(e1071)
 
-# %% Load, subset and adjust the data
+# %% Load, subset and eliminate features with none or little data
 #
 trn_u <- 'https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv'
 tst_u <- 'https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv'
 train_set <- read.csv(
-    trn_u,
-    header = TRUE,
-    stringsAsFactors = FALSE,
+    trn_u, header = TRUE, stringsAsFactors = FALSE,
     colClasses = c(classe = 'factor')
 )
 test_set <- read.csv(
     tst_u, header = TRUE, stringsAsFactors = FALSE
 )
-class(train_set$classe)
-head(test_set)
+na_idx <- apply(train_set, 2, function(x) mean(is.na(x) | x == '') > 0.9)
+trn_base <- train_set[, !na_idx]
+test <- test_set[, !na_idx]
 
-train_set$classe <- as.factor(train_set$classe)
-na_idx <- apply(
-    train_set, 2, function(x) mean(is.na(x) | x == '') > 0.9
-)
-trn_base <- train_set[, !na_idx] ## Create a base training dataset
-tst <- test_set[, !na_idx] ## Final testing dataset
-
-# %% Set up train, 5 validate folds, and test data sets
+# %% Set up train dataset and 5 validation folds
 #
 set.seed(121)
-index <- caret::createDataPartition(trn_base$X, p = 0.95, list = FALSE)
-train <- trn_base[index, ] ## Final training set, n = 18,642
-val_set <- trn_base[-index, ] ## Validation base set, n = 980
-val_idx <- replicate(5, sample(val_set$X, 20))
+trn_index <- caret::createDataPartition(trn_base$X, p = 0.95, list = FALSE)
+train <- trn_base[trn_index, ]
+validate <- trn_base[-trn_index, ]
+val_idx <- replicate(5, sample(validate$X, 20))
 for (i in 1:5) {
     assign(
         paste0('cv_', i),
-        val_set[which(val_set$X %in% val_idx[, i]), ]
+        validate[which(validate$X %in% val_idx[, i]), ]
     )
 }
 
-# %% Run PCA to transform train explaining 95% of the variance
+# %% Run PCA to transform train into matrix explaining 95% of the variance
 #
 pca_fit <- caret::preProcess(train[, 8:59], method = 'pca', thresh = 0.95)
 trn_pca <- predict(pca_fit, train[, 8:59])
@@ -72,7 +65,4 @@ cbind(acc_1, acc_2, acc_3)
 #
 tst_pca <- predict(pca_fit, tst[, 8:59])
 tst_pred <- predict(svm_fit, newdata = tst_pca)
-tst_cm <- caret::confusionMatrix(tst_pred, tst$classe)
-print(tst_cm$table)
-print(tst_cm$overall['Accuracy'])
 tst_pred

@@ -6,15 +6,24 @@ library(e1071)
 #
 trn_u <- 'https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv'
 tst_u <- 'https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv'
-trn_raw <- read.csv(trn_u, header = TRUE, stringsAsFactors = FALSE)
-tst_raw <- read.csv(tst_u, header = TRUE, stringsAsFactors = FALSE)
-
-trn_raw$classe <- as.factor(trn_raw$classe)
-na_idx <- apply(
-    trn_raw, 2, function(x) mean(is.na(x) | x == '') > 0.9
+train_set <- read.csv(
+    trn_u,
+    header = TRUE,
+    stringsAsFactors = FALSE,
+    colClasses = c(classe = 'factor')
 )
-trn_base <- trn_raw[, !na_idx] ## Create a base training dataset
-tst <- tst_raw[, !na_idx] ## Final testing dataset
+test_set <- read.csv(
+    tst_u, header = TRUE, stringsAsFactors = FALSE
+)
+class(train_set$classe)
+head(test_set)
+
+train_set$classe <- as.factor(train_set$classe)
+na_idx <- apply(
+    train_set, 2, function(x) mean(is.na(x) | x == '') > 0.9
+)
+trn_base <- train_set[, !na_idx] ## Create a base training dataset
+tst <- test_set[, !na_idx] ## Final testing dataset
 
 # %% Set up train, 5 validate folds, and test data sets
 #

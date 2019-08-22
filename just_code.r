@@ -55,9 +55,10 @@ train_pca <- predict(pca_fit, train[, features])
 # %% Fit an SVM model to the transformed matrix, get confusion matrix, accuracy
 #
 svm_fit <- e1071::svm(x = train_pca, y = train$label)
-class(svm_fit)
 svm_predict <- predict(svm_fit, newdata = train_pca)
-class(svm_predict)
+dim(svm_predict)
+
+
 conf_matrix <- caret::confusionMatrix(svm_predict, train$label)
 print(conf_matrix$table)
 print(conf_matrix$overall['Accuracy'])

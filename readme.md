@@ -2,9 +2,9 @@
 This project builds a prediction model for a barbell lifting task, using a dataset from a 2013 study that captured motion data in several dimensions/calculations for six subjects. The model design combines dimension reduction through PCA, then a support vector machine (SVM) learning process to achieve a 95% in-sample accuracy level for prediction of the manner of exercise among five classifications. Cross-validation testing confirmed the 95% (or greater) accuracy level on three independently sampled validation datasets modeled on the test dataset with an N-size of 20. The model was able to achieve 90% accuracy on the test dataset.
 
 The product includes:  
-  - A full [R-code markdown file](ex-predict-code.rmd) that includes all details of the R code that executes the data analysis pipeline.
+  - An [R-code file](ex-predict.r) that includes all details of the R code that executes the data analysis pipeline.
 
-  - A rendered [Final Report](ex-predict-report.md) that describes the analysis work and includes just the main chunks of R code in four main sections:
+  - A markdown [Final Report](ex-predict-report.md) with select embedded code that describes the analysis work in four main sections:
     * Data cleaning, component understanding and validation dataset sampling
     * Choices made for component reduction and preprocessing using PCA routines
     * Brief description of machine learning model analysis and the choice to use SVM

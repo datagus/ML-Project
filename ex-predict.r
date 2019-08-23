@@ -5,10 +5,10 @@
 
 # %% Load libraries
 #
-library(caret, quietly = T)
-library(e1071)
-library(readr)
-library(plyr)
+libraries <- c(
+    'caret', 'e1071', 'readr', 'plyr'
+)
+invisible(lapply(libraries, library, character.only = TRUE, quietly = True))
 
 # %% Load and subset data, eliminate the 100 out of 160 features with no data
 #
@@ -16,9 +16,9 @@ path <- gsub('\n', '', readr::read_file('.data'))
 train_raw <- read.csv(
     file.path(path, 'pml-training.csv'),
     header = TRUE, stringsAsFactors = FALSE,
-    colClasses = c(label = 'factor')
+    colClasses = c(classe = 'factor')
 )
-train_raw <- rename(train_raw, c('X' = 'id', 'label' = 'label'))
+train_raw <- rename(train_raw, c('X' = 'id', 'classe' = 'label'))
 test_raw <- read.csv(
     file.path(path, 'pml-testing.csv'),
     header = TRUE, stringsAsFactors = FALSE
@@ -27,21 +27,15 @@ test_raw <- rename(test_raw, c('X' = 'id'))
 na_idx <- apply(train_raw, 2, function(x) mean(is.na(x) | x == '') > 0.9)
 train_full <- train_raw[, !na_idx]  # 60 features
 test <- test_raw[, !na_idx]
-features <- features
+features <- 8:59
 
 # %% Set up train dataset and 5 small validation folds
 #
-set.seed(121)
+set.seed(78)
 train_idx <- caret::createDataPartition(train_full$id, p = 0.95, list = FALSE)
 train <- train_full[train_idx, ]
 validate <- train_full[-train_idx, ]
 val_idx <- replicate(5, sample(validate$id, 20))
-# for (i in 1:5) {
-#     assign(
-#         paste0('cv_', i),
-#         validate[which(validate$id %in% val_idx[, i]), ]
-#     )
-# }
 for (i in 1:5) {
     fold <- validate[which(validate$id %in% val_idx[, i]), ]
     do.call('<-', list(paste0('cv_', i), fold))
@@ -56,15 +50,23 @@ train_pca <- predict(pca_fit, train[, features])
 #
 svm_fit <- e1071::svm(x = train_pca, y = train$label)
 svm_predict <- predict(svm_fit, newdata = train_pca)
-dim(svm_predict)
-
-
 conf_matrix <- caret::confusionMatrix(svm_predict, train$label)
 print(conf_matrix$table)
 print(conf_matrix$overall['Accuracy'])
 
 # %% Run the SVM prediction on 3 of the validation sets
 #
+
+val_test <- function(prep, model, fold) {
+    fold_pca <- predict(prep, fold[, features])
+    fold_pred <- predict(model, newdata = fold_pca)
+    caret::confusionMatrix(fold_pred, fold$label)$overall['Accuracy']
+}
+
+acc_1 <- val_test(pca_fit, svm_fit, cv_1)
+
+
+
 cv_1_pca <- predict(pca_fit, cv_1[, features])
 cv_1_pred <- predict(svm_fit, newdata = cv_1_pca)
 acc_1 <- confusionMatrix(cv_1_pred, cv_1$label)$overall['Accuracy']
@@ -81,6 +83,6 @@ cbind(acc_1, acc_2, acc_3)
 
 # %% Transform the test sample and run the model to predict final
 #
-tst_pca <- predict(pca_fit, tst[, features])
-tst_pred <- predict(svm_fit, newdata = tst_pca)
-tst_pred
+test_pca <- predict(pca_fit, test[, features])
+test_pred <- predict(svm_fit, newdata = test_pca)
+test_pred

@@ -1,2 +1,0 @@
-linters: with_defaults(single_quotes_linter = NULL,
-                       camel_case_linter)

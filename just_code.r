@@ -5,10 +5,10 @@
 
 # %% Load libraries
 #
-library(caret, quietly = T)
-library(e1071)
-library(readr)
-library(plyr)
+libraries <- c(
+    'caret', 'e1071', 'readr', 'plyr'
+)
+invisible(lapply(libraries, library, character.only = TRUE, quietly = True))
 
 # %% Load and subset data, eliminate the 100 out of 160 features with no data
 #
@@ -56,6 +56,17 @@ print(conf_matrix$overall['Accuracy'])
 
 # %% Run the SVM prediction on 3 of the validation sets
 #
+
+val_test <- function(prep, model, fold) {
+    fold_pca <- predict(prep, fold[, features])
+    fold_pred <- predict(model, newdata = fold_pca)
+    caret::confusionMatrix(fold_pred, fold$label)$overall['Accuracy']
+}
+
+acc_1 <- val_test(pca_fit, svm_fit, cv_1)
+
+
+
 cv_1_pca <- predict(pca_fit, cv_1[, features])
 cv_1_pred <- predict(svm_fit, newdata = cv_1_pca)
 acc_1 <- confusionMatrix(cv_1_pred, cv_1$label)$overall['Accuracy']

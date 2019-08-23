@@ -6,9 +6,12 @@
 # %% Load libraries
 #
 libraries <- c(
-    'caret', 'e1071', 'readr', 'plyr'
+    'caret', 'e1071', 'readr', 'dplyr'
 )
-invisible(lapply(libraries, library, character.only = TRUE, quietly = TRUE))
+invisible(lapply(
+    libraries, suppressMessages(library),
+    character.only = TRUE, quietly = TRUE, warn.conflicts = FALSE
+))
 
 # %% Load and subset data, eliminate the 100 out of 160 features with no data
 #
@@ -18,12 +21,13 @@ train_raw <- read.csv(
     header = TRUE, stringsAsFactors = FALSE,
     colClasses = c(classe = 'factor')
 )
-train_raw <- rename(train_raw, c('X' = 'id', 'classe' = 'label'))
+cols <- c(id = 'X', label = 'classe')
+train_raw <- dplyr::rename(train_raw, !!cols)
 test_raw <- read.csv(
     file.path(path, 'pml-testing.csv'),
     header = TRUE, stringsAsFactors = FALSE
 )
-test_raw <- rename(test_raw, c('X' = 'id'))
+test_raw <- dplyr::rename(test_raw, id = X)
 na_idx <- apply(train_raw, 2, function(x) mean(is.na(x) | x == '') > 0.9)
 train_full <- train_raw[, !na_idx]  # 60 features
 test <- test_raw[, !na_idx]
@@ -52,17 +56,15 @@ print(conf_matrix$overall['Accuracy'])
 
 # %% Run the SVM prediction the 5 validation sets
 #
-val_test <- function(prep, model, x, y) {
-    fold_pca <- predict(prep, x)
-    fold_pred <- predict(model, newdata = fold_pca)
-    caret::confusionMatrix(fold_pred, y)$overall['Accuracy']
-}
-
 acc <- list()
 for (i in 1:5) {
-    fold <- validate[which(validate$id %in% val_matrix[, i]), ]
-    acc[i] <- val_test(pca_fit, svm_fit, fold[, features], fold[, 'label'])
+    fold <- filter(validate, id %in% val_matrix[, i])
+    fold_pca <- predict(pca_fit, fold[, features])
+    fold_pred <- predict(svm_fit, fold_pca)
+    cm <- caret::confusionMatrix(fold_pred, fold[, 'label'])
+    acc[i] <- cm$overall['Accuracy']
 }
+
 print(cbind(acc))
 
 # %% Transform the test sample and run the model to predict final

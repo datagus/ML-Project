@@ -9,6 +9,7 @@ import pandas as pd
 from os import path
 from sklearn.model_selection import train_test_split
 from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 # from sklearn.linear_model import SGDClassifier
 
@@ -19,7 +20,8 @@ with open('.data', 'r') as f:
 
 train_raw = pd.read_csv(
     path.join(data_path, 'pml-training.csv'),
-    dtype={'classe': 'category'}
+    dtype={'classe': 'category'},
+    low_memory=False
 )
 train_raw.rename(
     columns={'Unnamed: 0': 'id', 'classe': 'label'},
@@ -27,7 +29,8 @@ train_raw.rename(
 )
 test_raw = pd.read_csv(
     path.join(data_path, 'pml-testing.csv'),
-    dtype={'classe': 'category'}
+    dtype={'classe': 'category'},
+    low_memory=False
 )
 test_raw.rename(columns={'Unnamed: 0': 'id'}, inplace=True)
 
@@ -36,24 +39,25 @@ train_full = train_raw.loc[:, ~na_idx.values]
 test = test_raw.loc[:, ~na_idx.values]
 features = range(7, 59)
 
-# %% Set up train dataset and a 20x5 index matrix for 5 validation folds
+# %% Set up and scale train dataset and validation set for 5 folds later
 #
 train, validate = train_test_split(
     train_full, train_size=0.95, random_state=123
 )
-X_df = train.iloc[:, features]
+scaler = StandardScaler()
+X_df = scaler.fit_transform(train.iloc[:, features])
 y = train['label']
 
 # %% Run PCA to transform train into matrix explaining 95% of the variance
 #
-pca = PCA(n_components=26)
+pca = PCA(n_components=0.95)
 pca_fit = pca.fit(X_df)
 pca_fit.n_components_
 X_pca = pca.transform(X_df)
 
 # %% Fit an SVM model to the transformed matrix, get confusion matrix, accuracy
 #
-clf = SVC(gamma='scale', decision_function_shape='ovo')
+clf = SVC(gamma='auto')
 clf_fit = clf.fit(X_pca, y)
 clf_fit.score(X_pca, y)
 clf._gamma
@@ -63,7 +67,8 @@ clf._gamma
 acc = []
 for i in range(5):
     fold = validate.sample(20)
-    val = pca.transform(fold.iloc[:, features])
+    fold_df = scaler.transform(fold.iloc[:, features])
+    val = pca.transform(fold_df)
     val_y = fold.loc[:, 'label']
     acc.append(clf_fit.score(val, val_y))
 print(acc)

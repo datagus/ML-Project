@@ -7,10 +7,14 @@
 #
 import pandas as pd
 from os import path
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import (
+    train_test_split, cross_val_score
+)
+from sklearn.pipeline import make_pipeline
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
+
 # from sklearn.linear_model import SGDClassifier
 
 # %% Load and subset data, eliminate the 100 out of 160 features with no data
@@ -41,12 +45,13 @@ features = range(7, 59)
 
 # %% Set up and scale train dataset and validation set for 5 folds later
 #
-train, validate = train_test_split(
-    train_full, train_size=0.95, random_state=123
-)
+# train, validate = train_test_split(
+#     train_full, train_size=0.95, random_state=123
+# )
 scaler = StandardScaler()
-X_df = scaler.fit_transform(train.iloc[:, features])
-y = train['label']
+# X_df = scaler.fit_transform(train_full.iloc[:, features])
+X_df = train_full.iloc[:, features]
+y = train_full['label']
 
 # %% Run PCA to transform train into matrix explaining 95% of the variance
 #
@@ -55,20 +60,35 @@ pca_fit = pca.fit(X_df)
 pca_fit.n_components_
 X_pca = pca.transform(X_df)
 
+clf = make_pipeline(
+    StandardScaler(),
+    PCA(n_components=0.95),
+    SVC(gamma='auto', C=1)
+)
+clf_fit = clf.fit(X_df, y)
+clf.score(X_df, y)
+scores = cross_val_score(clf, X_df, y, cv=5)
+scores
+
+
+
 # %% Fit an SVM model to the transformed matrix, get confusion matrix, accuracy
 #
 clf = SVC(gamma='auto')
 clf_fit = clf.fit(X_pca, y)
+scores = cross_val_score(clf, X_pca, y, cv=5)
+
+scores
 clf_fit.score(X_pca, y)
 clf._gamma
 
 # %% Run the SVM prediction the 5 validation sets
 #
-acc = []
-for i in range(5):
-    fold = validate.sample(20)
-    fold_df = scaler.transform(fold.iloc[:, features])
-    val = pca.transform(fold_df)
-    val_y = fold.loc[:, 'label']
-    acc.append(clf_fit.score(val, val_y))
-print(acc)
+# acc = []
+# for i in range(5):
+#     fold = validate.sample(20)
+#     fold_df = scaler.transform(fold.iloc[:, features])
+#     val = pca.transform(fold_df)
+#     val_y = fold.loc[:, 'label']
+#     acc.append(clf_fit.score(val, val_y))
+# print(acc)

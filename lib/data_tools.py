@@ -8,22 +8,20 @@ from sklearn.model_selection import train_test_split
 
 # %% Load and subset data, eliminate the 100 out of 160 features with no data
 #
-def get_data(seed=123):
-    with open('.data', 'r') as f:
-        data_path = f.readline().replace('\n', '')
+with open('.data', 'r') as f:
+    data_path = f.readline().replace('\n', '')
 
-    train_raw = pd.read_csv(
-        path.join(data_path, 'pml-training.csv'),
+def load_file(dat):
+    raw_df = pd.read_csv(
+        path.join(data_path, dat),
         dtype={'classe': 'category'},
         low_memory=False
     ).rename(columns={'Unnamed: 0': 'id', 'classe': 'label'})
+    return raw_df
 
-    test_raw = pd.read_csv(
-        path.join(data_path, 'pml-testing.csv'),
-        dtype={'classe': 'category'},
-        low_memory=False
-    ).rename(columns={'Unnamed: 0': 'id'})
-
+def get_data(seed=123):
+    train_raw = load_file('pml-training.csv')
+    test_raw = load_file('pml-training.csv')
     na_idx = train_raw.apply(lambda x: x.isna().mean() > 0.9, axis=0)
     features = range(7, 59)
     X_train, X_val, y_train, y_val = train_test_split(

@@ -19,7 +19,7 @@ from lib.data_tools import get_data
 #
 X, y, X_val, y_val, test = get_data(seed=90)
 
-# %% Build pipeline for scaling, pca dimension reduction and the SVC estimator
+# %% Build and fit pipeline for scaling, dimension reduction and estimator
 #
 clf = make_pipeline(
     StandardScaler(), PCA(n_components=0.95), SVC(gamma='auto', C=1)

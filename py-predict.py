@@ -5,7 +5,6 @@
 
 # %% Load packages
 #
-import numpy as np
 from sklearn.model_selection import (
     cross_val_score, StratifiedKFold
 )
@@ -18,7 +17,7 @@ from lib.data_tools import get_data
 
 # %% Load the data
 #
-X, y, validate, test = get_data()
+X, y, X_val, y_val, test = get_data(seed=90)
 
 # %% Build pipeline for scaling, pca dimension reduction and the SVC estimator
 #
@@ -32,16 +31,17 @@ clf.fit(X, y)
 scores = cross_val_score(
     clf, X, y, cv=StratifiedKFold(n_splits=5, shuffle=True)
 )
-np.around(scores, 3)
 for i, s in enumerate(scores):
     print(f'score {i + 1}: {s:.3f}')
 
-# %% Simulate the test with a prediction score for 5 validation sets
+# %% Simulate the final test for small samples of size 20
 #
 test_accuracy = []
 for i in range(5):
-    val = validate.sample(20)
+    vx = X_val.sample(20)
+    vy = y_val.loc[vx.index]
     test_accuracy.append(
-        clf.score(val.iloc[:, features], val.loc[:, 'label'])
+        sum(clf.predict(vx) == vy)
     )
-print(acc)
+for i, s in enumerate(test_accuracy):
+    print(f'score {i + 1}: {s}')

@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 
 # %% Load and subset data, eliminate the 100 out of 160 features with no data
 #
-def get_data():
+def get_data(seed=123):
     with open('.data', 'r') as f:
         data_path = f.readline().replace('\n', '')
 
@@ -24,12 +24,13 @@ def get_data():
         low_memory=False
     ).rename(columns={'Unnamed: 0': 'id'})
 
-    features = range(7, 59)
     na_idx = train_raw.apply(lambda x: x.isna().mean() > 0.9, axis=0)
-    train = train_raw.loc[:, ~na_idx.values].iloc[:, features]
-    train_y = train_raw.loc[:, 'label']
-    test = test_raw.loc[:, ~na_idx.values].iloc[:, features]
-    train, val = train_test_split(
-        train, train_size=0.95, random_state=123
+    features = range(7, 59)
+    X_train, X_val, y_train, y_val = train_test_split(
+        train_raw.loc[:, ~na_idx.values].iloc[:, features],
+        train_raw.loc[:, 'label'],
+        train_size=0.95,
+        random_state=seed
     )
-    return train, train_y, val, test
+    test = test_raw.loc[:, ~na_idx.values].iloc[:, features]
+    return X_train, y_train, X_val, y_val, test

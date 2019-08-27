@@ -15,7 +15,7 @@ from sklearn.svm import SVC
 from lib.data_tools import get_data
 # from sklearn.linear_model import SGDClassifier
 
-# %% Load the data
+# %% Load the data, seed set (if desired) for train-test split
 #
 X, y, X_val, y_val, test = get_data(seed=90)
 

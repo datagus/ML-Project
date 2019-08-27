@@ -14,6 +14,7 @@ with open('.data', 'r') as f:
 def load_file(dat):
     raw_df = pd.read_csv(
         path.join(data_path, dat),
+        na_values='#DIV/0!',
         dtype={'classe': 'category'},
         low_memory=False
     ).rename(columns={'Unnamed: 0': 'id', 'classe': 'label'})
@@ -21,8 +22,11 @@ def load_file(dat):
 
 def get_data(seed=123):
     train_raw = load_file('pml-training.csv')
-    test_raw = load_file('pml-training.csv')
+    train_raw.shape
+    test_raw = load_file('pml-testing.csv')
     na_idx = train_raw.apply(lambda x: x.isna().mean() > 0.9, axis=0)
+    na_idx
+    sum(na_idx)
     features = range(7, 59)
     X_train, X_val, y_train, y_val = train_test_split(
         train_raw.loc[:, ~na_idx.values].iloc[:, features],

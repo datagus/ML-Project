@@ -1,3 +1,4 @@
 dev/* linguist-vendored=true
 *.rmd linquist-vendored=true
+*.md linquist-vendored=true
 *.html linquist-vendored=true

@@ -22,7 +22,7 @@ X, y, X_val, y_val, test = get_data(seed=90)
 #
 clf = make_pipeline(
     StandardScaler(),
-    PCA(n_components=0.95),
+    PCA(n_components=0.95, whiten=False),
     SVC(kernel='poly', gamma='auto', C=1)
 )
 clf.fit(X, y)

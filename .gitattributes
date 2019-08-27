@@ -1,4 +1,5 @@
-lib/* linguist-vendored-false
+pycode/* linguist-vendored=false
+pycode/lib/* linguist-vendored=false
 dev/* linguist-vendored=true
 *.rmd linguist-vendored=true
 *.md linguist-vendored=true

@@ -13,7 +13,6 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 from lib.data_tools import get_data
-# from sklearn.linear_model import SGDClassifier
 
 # %% Load the data, seed set (if desired) for train-test split
 #
@@ -22,7 +21,9 @@ X, y, X_val, y_val, test = get_data(seed=90)
 # %% Build and fit pipeline for scaling, dimension reduction and estimator
 #
 clf = make_pipeline(
-    StandardScaler(), PCA(n_components=0.95), SVC(gamma='auto', C=1)
+    StandardScaler(),
+    PCA(n_components=0.95),
+    SVC(kernel='poly', gamma='auto', C=1)
 )
 clf.fit(X, y)
 

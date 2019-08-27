@@ -1,3 +1,3 @@
 dev/* linguist-vendored=true
-*.rmd linquist-language=R
+*.rmd linquist-vendored=true
 *.html linquist-vendored=true
